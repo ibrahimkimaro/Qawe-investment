@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowRight, ArrowUpRight, Check, Download, FileText, Menu, MessageCircle, ShieldCheck, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Bot, Check, Download, FileText, Menu, MessageCircle, Send, ShieldCheck, X } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import heroImage from '../attached_assets/generated_images/mineral-hero.jpg';
 import materialImage from '../attached_assets/generated_images/material-detail.jpg';
@@ -52,12 +52,25 @@ const leadership = [
   { role: 'Financial', name: 'Hans Mtui', initials: 'HM' },
 ];
 
+type ChatMessage = {
+  role: 'assistant' | 'user';
+  text: string;
+};
+
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [enquiry, setEnquiry] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [brochureNotice, setBrochureNotice] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      role: 'assistant',
+      text: 'Welcome to Qawe Investment Company Limited. I can direct you to our commodities, services, delivery process, or enquiry team.',
+    },
+  ]);
 
   useEffect(() => {
     document.title = 'Qawe Investment Company Limited — Material. Moved with clarity.';
@@ -86,6 +99,52 @@ function App() {
   const submitEnquiry = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubmitted(true);
+  };
+
+  const getChatResponse = (message: string) => {
+    const normalized = message.toLowerCase();
+
+    if (normalized.includes('commodity') || normalized.includes('supply') || normalized.includes('material') || normalized.includes('miner')) {
+      return 'We work with Copper Cathode, Copper Concentrate, Copper Wire, Cobalt, Tantalite, Coltan, Gold, Sulfur, and other customer-requested minerals.';
+    }
+    if (normalized.includes('service') || normalized.includes('process') || normalized.includes('deliver') || normalized.includes('logistic')) {
+      return 'Our route is sourcing, quality verification, documentation, logistics, export, shipping, and final delivery. Share your material, destination, and timing to start.';
+    }
+    if (normalized.includes('responsib') || normalized.includes('compliance') || normalized.includes('certificate') || normalized.includes('license')) {
+      return 'We keep responsibility and verification factual. Approved documentation can be discussed directly with the team as part of a specific supply conversation.';
+    }
+    if (normalized.includes('location') || normalized.includes('port') || normalized.includes('country') || normalized.includes('origin')) {
+      return 'Operating locations and origin details are confirmed requirement by requirement. Tell us the destination and material you need, and the team can direct the next step.';
+    }
+    if (normalized.includes('contact') || normalized.includes('whatsapp') || normalized.includes('enquir') || normalized.includes('quote') || normalized.includes('rfq')) {
+      return 'The quickest route is to start an enquiry or continue on WhatsApp. I can open the short enquiry form for you now.';
+    }
+    return 'I can direct you to commodities, services, delivery, responsibility, or a business enquiry. What would you like to know?';
+  };
+
+  const sendChatMessage = (message = chatInput) => {
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) return;
+
+    if (trimmedMessage.toLowerCase().includes('enquir') || trimmedMessage.toLowerCase().includes('quote') || trimmedMessage.toLowerCase().includes('rfq')) {
+      setChatMessages((current) => [...current, { role: 'user', text: trimmedMessage }]);
+      setChatInput('');
+      setChatOpen(false);
+      openEnquiry();
+      return;
+    }
+
+    setChatMessages((current) => [
+      ...current,
+      { role: 'user', text: trimmedMessage },
+      { role: 'assistant', text: getChatResponse(trimmedMessage) },
+    ]);
+    setChatInput('');
+  };
+
+  const handleChatSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    sendChatMessage();
   };
 
   const downloadBrief = () => {
@@ -470,6 +529,54 @@ function App() {
           <span>© Qawe Investment Company Limited</span><span>Material / moved with clarity</span>
         </div>
       </footer>
+
+      {chatOpen && (
+        <div id="qawe-direct-chat" className="chat-panel fixed bottom-[8.5rem] right-5 z-40 flex w-[min(360px,calc(100vw-2rem))] flex-col overflow-hidden border border-[#5a5145] bg-[#211f1b] text-[#f1ede5] shadow-[0_24px_80px_rgba(0,0,0,.35)]" role="dialog" aria-label="Qawe direct chat">
+          <div className="flex items-center justify-between border-b border-[#4a443b] px-4 py-4">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 items-center justify-center border border-[#c89532] text-[#d09b30]"><Bot size={16} strokeWidth={1.5} /></span>
+              <div>
+                <p className="font-display text-sm font-semibold tracking-[-.02em]">Qawe direct</p>
+                <p className="mt-1 font-mono-custom text-[9px] uppercase tracking-[.12em] text-[#8f877c]">Direct answers · No waiting</p>
+              </div>
+            </div>
+            <button onClick={() => setChatOpen(false)} className="flex h-8 w-8 items-center justify-center border border-[#5a5145] text-[#bab2a7] hover:border-[#d09b30] hover:text-[#d09b30]" aria-label="Close chat" data-testid="button-close-chat"><X size={16} /></button>
+          </div>
+
+          <div className="chat-scrollbar flex max-h-[310px] flex-col gap-3 overflow-y-auto px-4 py-4" aria-live="polite">
+            {chatMessages.map((message, index) => (
+              <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[88%] border px-3 py-2.5 text-[12px] leading-5 ${message.role === 'user' ? 'border-[#a87820] bg-[#c89532] text-[#211f1b]' : 'border-[#4a443b] bg-[#181715] text-[#d5cec3]'}`}>
+                  {message.text}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="border-t border-[#4a443b] px-4 py-3">
+            <div className="mb-3 flex flex-wrap gap-2">
+              {[
+                ['What do you supply?', 'What commodities do you supply?'],
+                ['How does delivery work?', 'How does your delivery process work?'],
+                ['Start an enquiry', 'I want to start an enquiry'],
+              ].map(([label, prompt]) => (
+                <button key={label} onClick={() => sendChatMessage(prompt)} className="border border-[#5a5145] px-2.5 py-1.5 font-mono-custom text-[9px] uppercase tracking-[.08em] text-[#c6bfb4] transition-colors hover:border-[#d09b30] hover:text-[#d09b30]" data-testid={`button-chat-prompt-${label.toLowerCase().replaceAll(' ', '-')}`}>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <form onSubmit={handleChatSubmit} className="flex items-center gap-2 border-b border-[#5a5145]">
+              <input value={chatInput} onChange={(event) => setChatInput(event.target.value)} type="text" placeholder="Ask a direct question..." className="min-w-0 flex-1 bg-transparent py-2 text-[12px] text-[#f1ede5] placeholder:text-[#70685e] outline-none" aria-label="Chat message" data-testid="input-chat-message" />
+              <button type="submit" className="flex h-8 w-8 shrink-0 items-center justify-center text-[#d09b30] transition-colors hover:text-[#f1ede5]" aria-label="Send chat message" data-testid="button-send-chat"><Send size={15} /></button>
+            </form>
+            <p className="mt-3 font-mono-custom text-[9px] uppercase tracking-[.09em] text-[#70685e]">Website guidance only · Connect with the team for a quote</p>
+          </div>
+        </div>
+      )}
+
+      <button onClick={() => setChatOpen((value) => !value)} className="fixed bottom-20 right-5 z-30 flex items-center gap-2 border border-[#211f1b] bg-[#f1ede5] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#211f1b] shadow-lg transition-transform hover:-translate-y-1" aria-expanded={chatOpen} aria-controls="qawe-direct-chat" data-testid="button-chat-toggle">
+        {chatOpen ? <X size={15} /> : <Bot size={15} />} {chatOpen ? 'Close chat' : 'Ask QAWE'}
+      </button>
 
       <a href={waHref} target="_blank" rel="noreferrer" className="fixed bottom-5 right-5 z-30 flex items-center gap-2 border border-[#211f1b] bg-[#c89532] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#211f1b] shadow-lg transition-transform hover:-translate-y-1" data-testid="link-floating-whatsapp">
         <MessageCircle size={15} /> WhatsApp

@@ -148,6 +148,9 @@
 @keyframes marquee { to { transform: translateX(-50%); } }
 .modal-backdrop { animation: fade-in .2s ease-out both; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.chat-panel { animation: chat-in .25s cubic-bezier(.22,.8,.24,1) both; }
+@keyframes chat-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.chat-scrollbar { scrollbar-color: #5a5145 #211f1b; scrollbar-width: thin; }
 
 @media (max-width: 767px) {
   .section-pad { padding-top: 5rem; padding-bottom: 5rem; }
