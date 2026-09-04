@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Mineral Supply Co."
+description = "A premium corporate website for an international minerals and commodities trading company, helping buyers understand supplied commodities, end-to-end delivery capability, and how to start a business enquiry."
+version = "1.0.0"
+id = "artifacts/mineral-supply-site"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21454
+
+[services.development]
+run = "pnpm --filter @workspace/mineral-supply-site run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/mineral-supply-site", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/mineral-supply-site/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21454"
+BASE_PATH = "/"
