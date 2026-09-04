@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowRight, ArrowUpRight, Bot, Check, Download, FileText, Menu, MessageCircle, Send, ShieldCheck, X } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUpRight, Bot, Check, Download, FileText, Mail, MapPin, Menu, MessageCircle, Phone, Send, ShieldCheck, X } from 'lucide-react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import heroImage from '../attached_assets/generated_images/mineral-hero.jpg';
 import materialImage from '../attached_assets/generated_images/material-detail.jpg';
@@ -10,6 +10,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Router as WouterRouter, Route, Switch, useLocation } from 'wouter';
 import NotFound from '@/pages/not-found';
+import { trackEvent } from '@/lib/analytics';
 
 const queryClient = new QueryClient();
 const HERO_IMAGE = heroImage;
@@ -28,15 +29,19 @@ const navItems = [
   ['Contact', 'contact'],
 ];
 
+const OFFICIAL_EMAIL = 'qaweminiral@qawe.co.tz';
+const OFFICE_ADDRESS = 'Ununio, Dar es Salaam, Tanzania';
+const PRIMARY_WHATSAPP = '255750471188';
+
 const commodities = [
-  { name: 'Copper Cathode', code: '01', detail: 'Refined material for industrial buyers', tone: 'Copper' },
-  { name: 'Copper Concentrate', code: '02', detail: 'Sourced to a defined customer brief', tone: 'Concentrate' },
-  { name: 'Copper Wire', code: '03', detail: 'Supply conversations built around use', tone: 'Wire' },
-  { name: 'Cobalt', code: '04', detail: 'Requirement-led sourcing and verification', tone: 'Cobalt' },
-  { name: 'Tantalite', code: '05', detail: 'Traceable paperwork from origin onward', tone: 'Tantalite' },
-  { name: 'Coltan', code: '06', detail: 'A considered route from source to buyer', tone: 'Coltan' },
-  { name: 'Gold', code: '07', detail: 'Handled with clarity and discretion', tone: 'Gold' },
-  { name: 'Sulfur', code: '08', detail: 'Practical supply for specific requirements', tone: 'Sulfur' },
+  { name: 'Copper Cathode', slug: 'copper-cathode', code: '01', category: 'Industrial minerals', detail: 'Refined material for industrial buyers', description: 'A refined copper product commonly used as a feedstock for manufacturing and further processing. Availability, specification, documentation and delivery are discussed against the buyer’s requirement.', uses: 'Electrical, construction and industrial manufacturing', forms: 'Cathode sheets; customer-specific commercial brief' },
+  { name: 'Copper Concentrate', slug: 'copper-concentrate', code: '02', category: 'Industrial minerals', detail: 'Sourced to a defined customer brief', description: 'A copper-bearing material prepared for industrial processing. A supply conversation should define the required specification, documentation, destination and timing before commercial terms are discussed.', uses: 'Smelting, refining and industrial processing', forms: 'Concentrate; requirement-led sourcing brief' },
+  { name: 'Copper Wire', slug: 'copper-wire', code: '03', category: 'Industrial minerals', detail: 'Supply conversations built around use', description: 'Copper wire for buyers who need a defined material form and an organised route to delivery. The team can discuss application, specification, quantity and destination as part of an enquiry.', uses: 'Electrical systems, manufacturing and fabrication', forms: 'Wire; specification-led enquiry' },
+  { name: 'Cobalt', slug: 'cobalt', code: '04', category: 'Industrial minerals', detail: 'Requirement-led sourcing and verification', description: 'A strategic industrial material used in several manufacturing and technology supply chains. Each conversation is shaped around the intended use, documentation and route to the buyer.', uses: 'Industrial processing, technology and manufacturing', forms: 'Requirement-specific material discussion' },
+  { name: 'Tantalite', slug: 'tantalite', code: '05', category: 'Industrial minerals', detail: 'Documentation considered from origin onward', description: 'A tantalum-bearing mineral that requires a careful conversation around material identification, documentation, origin and movement. Availability is confirmed against the individual requirement.', uses: 'Specialist processing and technology-related supply chains', forms: 'Mineral material; documentation-led enquiry' },
+  { name: 'Coltan', slug: 'coltan', code: '06', category: 'Industrial minerals', detail: 'A considered route from source to buyer', description: 'A columbite-tantalite mineral material discussed with attention to the buyer’s requirement, available documentation, verification steps and delivery route.', uses: 'Specialist processing and technology-related supply chains', forms: 'Mineral material; requirement-led sourcing brief' },
+  { name: 'Gold', slug: 'gold', code: '07', category: 'Precious metals', detail: 'Handled with clarity and discretion', description: 'A precious metal material discussed privately and requirement by requirement. Product form, documentation, verification, destination and commercial process are confirmed directly with qualified buyers.', uses: 'Precious metals trading, manufacturing and investment-related requirements', forms: 'Requirement-specific precious metal discussion' },
+  { name: 'Sulfur', slug: 'sulfur', code: '08', category: 'Industrial minerals', detail: 'Practical supply for specific requirements', description: 'An industrial material used across chemical and manufacturing applications. A clear brief helps the team align on grade, form, quantity, destination and timing.', uses: 'Chemical, agricultural and industrial applications', forms: 'Requirement-specific material discussion' },
 ];
 
 const services = [
@@ -47,15 +52,31 @@ const services = [
 ];
 
 const leadership = [
-  { role: 'Director', name: 'Tshepo Zwelibanzi', initials: 'TZ' },
-  { role: 'PR', name: 'Dan Guguka', initials: 'DG' },
-  { role: 'Financial', name: 'Hans Mtui', initials: 'HM' },
+  { role: 'Director', name: 'Tshepo Zwelibanzi', initials: 'TZ', contact: '+27789638042', tel: '27789638042' },
+  { role: 'PR', name: 'Dan Guguka', initials: 'DG', contact: '+255750471188', tel: '255750471188' },
+  { role: 'Financial', name: 'Hans Mtui', initials: 'HM', contact: '+255619685942', tel: '255619685942' },
+];
+
+const companyStats = [
+  { value: '18+', label: 'Years of experience' },
+  { value: '120+', label: 'Customers worldwide' },
+  { value: '01', label: 'Dar es Salaam office' },
 ];
 
 type ChatMessage = {
   role: 'assistant' | 'user';
   text: string;
 };
+
+type Commodity = (typeof commodities)[number];
+
+const sitePath = (path = '') => {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+  return `${base}${path ? `/${path.replace(/^\//, '')}` : '/'}`;
+};
+
+const whatsappLink = (phone: string, message = 'Hello Qawe Investment Company Limited, I would like to discuss a mineral supply requirement.') =>
+  `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
 function App() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -65,6 +86,7 @@ function App() {
   const [brochureNotice, setBrochureNotice] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatInput, setChatInput] = useState('');
+  const [selectedCommodity, setSelectedCommodity] = useState<Commodity | null>(null);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
@@ -81,7 +103,7 @@ function App() {
   }, []);
 
   const waHref = useMemo(
-    () => `https://wa.me/?text=${encodeURIComponent('Hello Qawe Investment Company Limited, I would like to discuss a mineral supply requirement.')}`,
+    () => whatsappLink(PRIMARY_WHATSAPP),
     [],
   );
 
@@ -94,11 +116,30 @@ function App() {
     setEnquiry(commodity ? `I am enquiring about ${commodity}.` : '');
     setSubmitted(false);
     setModalOpen(true);
+    trackEvent('rfq_started', { source: commodity ? 'commodity' : 'site_cta' });
   };
 
   const submitEnquiry = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const getValue = (name: string) => String(formData.get(name) ?? '').trim();
+    const subject = `Mineral enquiry from ${getValue('company') || 'website visitor'}`;
+    const body = [
+      `Name: ${getValue('name')}`,
+      `Company: ${getValue('company')}`,
+      `Work email: ${getValue('email')}`,
+      `Phone: ${getValue('phone') || 'Not provided'}`,
+      `Material: ${getValue('commodity') || 'Not specified'}`,
+      `Quantity / volume: ${getValue('quantity') || 'Not specified'}`,
+      `Destination: ${getValue('destination') || 'Not specified'}`,
+      `Timeline: ${getValue('timeline') || 'Not specified'}`,
+      '',
+      'Requirement:',
+      getValue('message') || enquiry,
+    ].join('\n');
+    trackEvent('rfq_submitted', { channel: 'email', material: getValue('commodity') || 'not_specified' });
     setSubmitted(true);
+    window.location.href = `mailto:${OFFICIAL_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const getChatResponse = (message: string) => {
@@ -148,14 +189,7 @@ function App() {
   };
 
   const downloadBrief = () => {
-    const brief = `QAWE INVESTMENT COMPANY LIMITED\nCapability brief\n\nSOURCING / VERIFICATION / LOGISTICS / DELIVERY\n\nCommodities\nCopper Cathode, Copper Concentrate, Copper Wire, Cobalt, Tantalite, Coltan, Gold, Sulfur, and other customer-requested minerals.\n\nWe source and supply to customer requirements, with quality verification, documentation, logistics, export, shipping and final delivery.\n\nContact Qawe Investment Company Limited to begin a requirement-led conversation.`;
-    const blob = new Blob([brief], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'qawe-investment-company-capability-brief.txt';
-    link.click();
-    URL.revokeObjectURL(url);
+    trackEvent('brochure_requested', { status: 'pending_upload' });
     setBrochureNotice(true);
     window.setTimeout(() => setBrochureNotice(false), 3500);
   };
@@ -276,6 +310,14 @@ function App() {
                 <p className="text-[16px] leading-8 text-[#554f47]">Qawe Investment Company Limited is built around a straightforward proposition: source and supply to customer requirements, then stay close to the details that make delivery dependable.</p>
                 <p className="text-sm leading-6 text-[#777066]">Quality verification, documentation, logistics, export, shipping and final delivery are not separate promises. They are one considered path.</p>
               </div>
+              <div className="mt-10 grid grid-cols-3 border-y border-[#cfc8bd] py-6">
+                {companyStats.map((stat) => (
+                  <div key={stat.label} className="border-r border-[#cfc8bd] px-4 first:pl-0 last:border-0">
+                    <p className="font-display text-3xl font-semibold tracking-[-.06em] text-[#a77520]">{stat.value}</p>
+                    <p className="mt-2 max-w-[110px] text-[10px] uppercase leading-4 tracking-[.1em] text-[#777066]">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
               <button onClick={() => openEnquiry()} className="mt-10 flex items-center gap-3 border-b border-[#8b651e] pb-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#705115] hover:text-[#c89532]" data-testid="button-about-conversation">
                 Talk through a requirement <ArrowUpRight size={15} />
               </button>
@@ -289,16 +331,17 @@ function App() {
               <div className="eyebrow flex items-center gap-3 text-[#d09b30]"><span className="h-px w-9 bg-[#c89532]" /> 02 / Commodities</div>
               <h2 className="mt-7 max-w-[680px] font-display text-[clamp(2.8rem,5vw,5.7rem)] font-semibold leading-[.9] tracking-[-.07em]">The material<br /><span className="text-[#d09b30]">in focus.</span></h2>
             </div>
-            <p className="reveal max-w-[300px] text-sm leading-6 text-[#aaa39a]">A focused catalogue for serious enquiries. Tell us what you need; we will shape the right conversation around it.</p>
+            <p className="reveal max-w-[300px] text-sm leading-6 text-[#aaa39a]">Industrial minerals and precious metals for serious enquiries. Select a material to understand its role, then shape the right conversation around it.</p>
           </div>
           <div className="mt-14 grid gap-px bg-[#5a5145]/45 md:grid-cols-2 lg:grid-cols-4">
             {commodities.map((commodity, index) => (
-              <button key={commodity.name} onClick={() => openEnquiry(commodity.name)} className="commodity-card group relative min-h-[190px] border border-[#5a5145]/45 bg-[#211f1b] p-6 text-left" data-testid={`button-commodity-${commodity.name.toLowerCase().replaceAll(' ', '-')}`}>
+              <button key={commodity.name} onClick={() => { setSelectedCommodity(commodity); trackEvent('commodity_viewed', { commodity: commodity.name, category: commodity.category }); }} className="commodity-card group relative min-h-[210px] border border-[#5a5145]/45 bg-[#211f1b] p-6 text-left" data-testid={`button-commodity-${commodity.name.toLowerCase().replaceAll(' ', '-')}`}>
                 <div className="flex items-start justify-between">
                   <span className="font-mono-custom text-[10px] text-[#c89532]">{commodity.code}</span>
                   <ArrowUpRight className="commodity-arrow text-[#837b6e]" size={19} strokeWidth={1.25} />
                 </div>
                 <div className="mt-12">
+                  <span className="font-mono-custom text-[9px] uppercase tracking-[.12em] text-[#82796e]">{commodity.category}</span>
                   <h3 className="font-display text-[21px] font-semibold tracking-[-.03em] text-[#f1ede5]">{commodity.name}</h3>
                   <p className="mt-2 text-xs leading-5 text-[#9c958b]">{commodity.detail}</p>
                 </div>
@@ -307,7 +350,7 @@ function App() {
             ))}
           </div>
           <div className="mt-5 flex flex-col justify-between gap-4 border-t border-[#5a5145]/60 pt-5 md:flex-row md:items-center">
-            <p className="text-xs text-[#8f887e]">Also sourcing other customer-requested minerals.</p>
+             <p className="text-xs text-[#8f887e]">Also sourcing other customer-requested minerals.</p>
             <button onClick={() => openEnquiry('Other customer-requested minerals')} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#d09b30]" data-testid="button-other-minerals">Ask about a specific material <ArrowRight size={14} /></button>
           </div>
         </section>
@@ -421,7 +464,7 @@ function App() {
               <h2 className="mt-7 font-display text-[clamp(2.8rem,5vw,5.3rem)] font-semibold leading-[.9] tracking-[-.07em]">What sits<br />behind the <span className="text-[#d09b30]">deal.</span></h2>
             </div>
             <button onClick={downloadBrief} className="line-button flex w-fit items-center gap-3 border border-[#786f61] px-4 py-3 text-[10px] font-bold uppercase tracking-[.14em] text-[#d7d1c8] hover:border-[#d09b30] hover:text-[#d09b30]" data-testid="button-download-brief">
-              <Download size={14} /> Download capability brief
+              <FileText size={14} /> Company profile PDF — coming soon
             </button>
           </div>
           <div className="mt-14 grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
@@ -443,7 +486,7 @@ function App() {
               ))}
             </div>
           </div>
-          {brochureNotice && <div className="mt-7 flex items-center gap-2 text-xs text-[#d09b30]" role="status" data-testid="status-download"><Check size={15} /> Capability brief prepared for download.</div>}
+          {brochureNotice && <div className="mt-7 flex items-center gap-2 text-xs text-[#d09b30]" role="status" data-testid="status-download"><Check size={15} /> The approved company profile PDF will be added after upload.</div>}
         </section>
 
         <section className="section-pad bg-[#e4e0d8]">
@@ -458,9 +501,18 @@ function App() {
                 <div key={person.name} className="flex items-center justify-between border-b border-[#beb6a9] py-7">
                   <div className="flex items-center gap-5">
                     <span className="flex h-12 w-12 items-center justify-center border border-[#b88a2a] font-mono-custom text-xs text-[#8b651e]">{person.initials}</span>
-                    <div><span className="eyebrow text-[#8e867a]">{person.role}</span><h3 className="mt-2 font-display text-2xl font-semibold tracking-[-.04em] text-[#2a261f]">{person.name}</h3></div>
+                      <div>
+                        <span className="eyebrow text-[#8e867a]">{person.role}</span>
+                        <h3 className="mt-2 font-display text-2xl font-semibold tracking-[-.04em] text-[#2a261f]">{person.name}</h3>
+                        <a href={`tel:+${person.tel}`} onClick={() => trackEvent('contact_clicked', { channel: 'phone', role: person.role })} className="mt-2 flex items-center gap-2 text-xs text-[#776e62] hover:text-[#a77520]" data-testid={`link-phone-${person.initials}`}>
+                          <Phone size={12} /> {person.contact}
+                        </a>
+                      </div>
                   </div>
-                  <button onClick={() => openEnquiry(`A conversation with ${person.name}`)} className="flex h-9 w-9 items-center justify-center border border-[#bdb5a9] text-[#7b5c1d] hover:border-[#a77520] hover:bg-[#d9d3c9]" aria-label={`Contact ${person.name}`} data-testid={`button-contact-${person.initials}`}><ArrowUpRight size={16} /></button>
+                    <div className="flex items-center gap-2">
+                      <a href={whatsappLink(person.tel, `Hello ${person.name}, I would like to discuss a mineral supply requirement with Qawe Investment Company Limited.`)} target="_blank" rel="noreferrer" onClick={() => trackEvent('contact_clicked', { channel: 'whatsapp', role: person.role })} className="flex h-9 w-9 items-center justify-center border border-[#bdb5a9] text-[#7b5c1d] hover:border-[#a77520] hover:bg-[#d9d3c9]" aria-label={`Message ${person.name} on WhatsApp`} data-testid={`button-whatsapp-${person.initials}`}><MessageCircle size={15} /></a>
+                      <button onClick={() => openEnquiry(`A conversation with ${person.name}`)} className="flex h-9 w-9 items-center justify-center border border-[#bdb5a9] text-[#7b5c1d] hover:border-[#a77520] hover:bg-[#d9d3c9]" aria-label={`Contact ${person.name}`} data-testid={`button-contact-${person.initials}`}><ArrowUpRight size={16} /></button>
+                    </div>
                 </div>
               ))}
             </div>
@@ -474,8 +526,10 @@ function App() {
               <h2 className="mt-7 max-w-[560px] font-display text-[clamp(3rem,6vw,6.8rem)] font-semibold leading-[.87] tracking-[-.08em]">Bring us<br />the <span className="text-[#d09b30]">brief.</span></h2>
               <p className="mt-8 max-w-[430px] text-[15px] leading-7 text-[#aca49a]">Tell us the material, the requirement and where it needs to go. The first step is a clear conversation.</p>
               <div className="mt-10 flex flex-col items-start gap-4">
-                <a href="mailto:enquiries@mineralsupply.co" className="flex items-center gap-3 text-sm text-[#d8d1c7] hover:text-[#d09b30]" data-testid="link-email"><FileText size={16} className="text-[#d09b30]" /> enquiries@mineralsupply.co</a>
-                <a href={waHref} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-sm text-[#d8d1c7] hover:text-[#d09b30]" data-testid="link-whatsapp"><MessageCircle size={16} className="text-[#d09b30]" /> Continue on WhatsApp</a>
+                <a href={`mailto:${OFFICIAL_EMAIL}`} onClick={() => trackEvent('contact_clicked', { channel: 'email', location: 'contact' })} className="flex items-center gap-3 text-sm text-[#d8d1c7] hover:text-[#d09b30]" data-testid="link-email"><Mail size={16} className="text-[#d09b30]" /> {OFFICIAL_EMAIL}</a>
+                <a href={`tel:+${PRIMARY_WHATSAPP}`} onClick={() => trackEvent('contact_clicked', { channel: 'phone', location: 'contact' })} className="flex items-center gap-3 text-sm text-[#d8d1c7] hover:text-[#d09b30]" data-testid="link-phone-main"><Phone size={16} className="text-[#d09b30]" /> +255 750 471 188</a>
+                <a href={waHref} target="_blank" rel="noreferrer" onClick={() => trackEvent('contact_clicked', { channel: 'whatsapp', location: 'contact' })} className="flex items-center gap-3 text-sm text-[#d8d1c7] hover:text-[#d09b30]" data-testid="link-whatsapp"><MessageCircle size={16} className="text-[#d09b30]" /> Continue on WhatsApp</a>
+                <p className="flex items-start gap-3 text-sm text-[#d8d1c7]"><MapPin size={16} className="mt-0.5 shrink-0 text-[#d09b30]" /> {OFFICE_ADDRESS}</p>
               </div>
             </div>
             <form onSubmit={submitEnquiry} className="reveal reveal-delay-1 border border-[#4a443b] bg-[#211f1b] p-6 sm:p-8" aria-label="Business enquiry form">
@@ -484,23 +538,28 @@ function App() {
                   <span className="flex h-12 w-12 items-center justify-center bg-[#c89532] text-[#211f1b]"><Check size={22} /></span>
                   <span className="eyebrow mt-8 text-[#d09b30]">Enquiry received</span>
                   <h3 className="mt-4 max-w-[430px] font-display text-4xl font-semibold leading-none tracking-[-.06em]">Thank you. The next step is a conversation.</h3>
-                  <p className="mt-5 max-w-[400px] text-sm leading-6 text-[#aaa196]">Your request has been captured in this frontend demonstration. Use WhatsApp or email for a direct business conversation.</p>
+                   <p className="mt-5 max-w-[400px] text-sm leading-6 text-[#aaa196]">Your email application should now contain a prepared enquiry addressed to {OFFICIAL_EMAIL}. If it did not open, contact the team directly by email or WhatsApp.</p>
                   <button type="button" onClick={() => setSubmitted(false)} className="mt-8 border-b border-[#c89532] pb-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#d09b30]" data-testid="button-new-enquiry">Send another enquiry</button>
                 </div>
               ) : (
                 <>
                   <div className="mb-8 flex items-center justify-between border-b border-[#4a443b] pb-5">
                     <span className="eyebrow text-[#d09b30]">Requirement form</span>
-                    <span className="font-mono-custom text-[10px] text-[#82796e]">MS / 09</span>
+                     <span className="font-mono-custom text-[10px] text-[#82796e]">RFQ / 09</span>
                   </div>
                   <div className="grid gap-6 sm:grid-cols-2">
                     <label className="block"><span className="eyebrow text-[#8f877c]">Name</span><input required name="name" type="text" placeholder="Your name" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="input-name" /></label>
                     <label className="block"><span className="eyebrow text-[#8f877c]">Company</span><input required name="company" type="text" placeholder="Company name" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="input-company" /></label>
                     <label className="block sm:col-span-2"><span className="eyebrow text-[#8f877c]">Work email</span><input required name="email" type="email" placeholder="name@company.com" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="input-email" /></label>
+                     <label className="block"><span className="eyebrow text-[#8f877c]">Phone / WhatsApp</span><input name="phone" type="tel" placeholder="+country code" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="input-phone" /></label>
+                     <label className="block"><span className="eyebrow text-[#8f877c]">Material</span><select required name="commodity" defaultValue="" className="mt-3 w-full border-b border-[#5a5145] bg-[#211f1b] py-3 text-sm text-[#f1ede5] outline-none focus:border-[#d09b30]" data-testid="select-commodity"><option value="" disabled>Select a material</option>{commodities.map((commodity) => <option key={commodity.name} value={commodity.name}>{commodity.name}</option>)}<option value="Other customer-requested minerals">Other material</option></select></label>
+                     <label className="block"><span className="eyebrow text-[#8f877c]">Quantity / volume</span><input name="quantity" type="text" placeholder="Estimated requirement" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="input-quantity" /></label>
+                     <label className="block"><span className="eyebrow text-[#8f877c]">Destination</span><input required name="destination" type="text" placeholder="Country / delivery port" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="input-destination" /></label>
+                     <label className="block"><span className="eyebrow text-[#8f877c]">Timeline</span><input name="timeline" type="text" placeholder="Required delivery timing" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="input-timeline" /></label>
                     <label className="block sm:col-span-2"><span className="eyebrow text-[#8f877c]">What are you sourcing?</span><textarea required name="message" value={enquiry} onChange={(event) => setEnquiry(event.target.value)} rows={4} placeholder="Material, specification, destination, timing..." className="mt-3 w-full resize-none border-b border-[#5a5145] bg-transparent py-3 text-sm leading-6 text-[#f1ede5] placeholder:text-[#70685e] outline-none transition-colors focus:border-[#d09b30]" data-testid="textarea-requirement" /></label>
                   </div>
                   <div className="mt-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-                    <p className="max-w-[260px] text-[11px] leading-5 text-[#81796f]">We use your details to respond to this business enquiry.</p>
+                     <p className="max-w-[280px] text-[11px] leading-5 text-[#81796f]">Submitting opens your email application with the RFQ prepared for {OFFICIAL_EMAIL}.</p>
                     <button type="submit" className="line-button flex items-center justify-center gap-3 bg-[#c89532] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#211f1b] hover:bg-[#e2b04c]" data-testid="button-submit-enquiry">Send enquiry <ArrowUpRight size={15} /></button>
                   </div>
                 </>
@@ -520,9 +579,9 @@ function App() {
             <p className="mt-4 text-xs text-[#827a6f]">Sourcing-led. Operationally grounded. Clear about the route.</p>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[10px] font-semibold uppercase tracking-[.13em] text-[#aaa197]">
-            <button onClick={downloadBrief} className="flex items-center gap-2 hover:text-[#d09b30]" data-testid="button-footer-download"><Download size={13} /> Capability brief</button>
-            <a href="mailto:enquiries@mineralsupply.co" className="hover:text-[#d09b30]" data-testid="link-footer-email">Email us</a>
-            <a href={waHref} target="_blank" rel="noreferrer" className="hover:text-[#d09b30]" data-testid="link-footer-whatsapp">WhatsApp</a>
+             <button onClick={downloadBrief} className="flex items-center gap-2 hover:text-[#d09b30]" data-testid="button-footer-download"><FileText size={13} /> Company profile PDF</button>
+             <a href={`mailto:${OFFICIAL_EMAIL}`} onClick={() => trackEvent('contact_clicked', { channel: 'email', location: 'footer' })} className="hover:text-[#d09b30]" data-testid="link-footer-email">Email us</a>
+             <a href={waHref} target="_blank" rel="noreferrer" onClick={() => trackEvent('contact_clicked', { channel: 'whatsapp', location: 'footer' })} className="hover:text-[#d09b30]" data-testid="link-footer-whatsapp">WhatsApp</a>
           </div>
         </div>
         <div className="mx-auto mt-9 flex max-w-[1280px] justify-between border-t border-[#37332d] pt-5 font-mono-custom text-[9px] uppercase tracking-[.13em] text-[#6f685e]">
@@ -574,6 +633,32 @@ function App() {
         </div>
       )}
 
+      {selectedCommodity && (
+        <div className="modal-backdrop fixed inset-0 z-50 flex items-center justify-center bg-[#12110f]/80 px-4 py-6 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="commodity-dialog-title">
+          <div className="relative max-h-[90vh] w-full max-w-[680px] overflow-auto border border-[#5a5145] bg-[#211f1b] p-6 text-[#f1ede5] sm:p-9">
+            <button onClick={() => setSelectedCommodity(null)} className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center border border-[#5a5145] text-[#bab2a7] hover:border-[#d09b30] hover:text-[#d09b30]" aria-label="Close commodity details" data-testid="button-close-commodity"><X size={18} /></button>
+            <span className="eyebrow text-[#d09b30]">{selectedCommodity.category} / {selectedCommodity.code}</span>
+            <h2 id="commodity-dialog-title" className="mt-5 max-w-[520px] font-display text-4xl font-semibold leading-[.93] tracking-[-.06em]">{selectedCommodity.name}</h2>
+            <p className="mt-7 max-w-[560px] text-[15px] leading-7 text-[#c1b9ae]">{selectedCommodity.description}</p>
+            <div className="mt-8 grid gap-5 border-y border-[#4a443b] py-6 sm:grid-cols-2">
+              <div>
+                <span className="eyebrow text-[#8f877c]">Typical use</span>
+                <p className="mt-3 text-sm leading-6 text-[#ddd6cc]">{selectedCommodity.uses}</p>
+              </div>
+              <div>
+                <span className="eyebrow text-[#8f877c]">Conversation format</span>
+                <p className="mt-3 text-sm leading-6 text-[#ddd6cc]">{selectedCommodity.forms}</p>
+              </div>
+            </div>
+            <p className="mt-6 text-xs leading-5 text-[#8d857a]">Product availability, specification, verification, documentation and delivery are confirmed requirement by requirement.</p>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <button onClick={() => { const name = selectedCommodity.name; setSelectedCommodity(null); openEnquiry(name); }} className="flex items-center gap-3 bg-[#c89532] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#211f1b] hover:bg-[#e2b04c]" data-testid="button-commodity-enquiry">Request an RFQ <ArrowUpRight size={15} /></button>
+              <a href={sitePath(`commodities/${selectedCommodity.slug}`)} onClick={() => trackEvent('commodity_detail_opened', { commodity: selectedCommodity.name })} className="flex items-center gap-2 border border-[#786f61] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#d7d1c8] hover:border-[#d09b30] hover:text-[#d09b30]" data-testid="link-commodity-detail">Open full detail <ArrowRight size={14} /></a>
+            </div>
+          </div>
+        </div>
+      )}
+
       <button onClick={() => setChatOpen((value) => !value)} className="fixed bottom-20 right-5 z-30 flex items-center gap-2 border border-[#211f1b] bg-[#f1ede5] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#211f1b] shadow-lg transition-transform hover:-translate-y-1" aria-expanded={chatOpen} aria-controls="qawe-direct-chat" data-testid="button-chat-toggle">
         {chatOpen ? <X size={15} /> : <Bot size={15} />} {chatOpen ? 'Close chat' : 'Ask QAWE'}
       </button>
@@ -589,8 +674,12 @@ function App() {
             <span className="eyebrow text-[#d09b30]">Direct conversation</span>
             <h2 id="enquiry-title" className="mt-5 max-w-[470px] font-display text-4xl font-semibold leading-[.93] tracking-[-.06em]">Tell us what needs to move.</h2>
             <form onSubmit={(event) => { submitEnquiry(event); setModalOpen(false); scrollTo('contact'); }} className="mt-8 grid gap-5">
-              <label><span className="eyebrow text-[#8f877c]">Work email</span><input required type="email" placeholder="name@company.com" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none focus:border-[#d09b30]" data-testid="modal-input-email" /></label>
-              <label><span className="eyebrow text-[#8f877c]">Requirement</span><textarea required value={enquiry} onChange={(event) => setEnquiry(event.target.value)} rows={4} placeholder="Material, destination, timing..." className="mt-3 w-full resize-none border-b border-[#5a5145] bg-transparent py-3 text-sm leading-6 text-[#f1ede5] placeholder:text-[#70685e] outline-none focus:border-[#d09b30]" data-testid="modal-textarea-requirement" /></label>
+             <div className="grid gap-5 sm:grid-cols-2">
+               <label><span className="eyebrow text-[#8f877c]">Name</span><input required name="name" type="text" placeholder="Your name" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none focus:border-[#d09b30]" data-testid="modal-input-name" /></label>
+               <label><span className="eyebrow text-[#8f877c]">Company</span><input required name="company" type="text" placeholder="Company name" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none focus:border-[#d09b30]" data-testid="modal-input-company" /></label>
+             </div>
+             <label><span className="eyebrow text-[#8f877c]">Work email</span><input required name="email" type="email" placeholder="name@company.com" className="mt-3 w-full border-b border-[#5a5145] bg-transparent py-3 text-sm text-[#f1ede5] placeholder:text-[#70685e] outline-none focus:border-[#d09b30]" data-testid="modal-input-email" /></label>
+             <label><span className="eyebrow text-[#8f877c]">Requirement</span><textarea required name="message" value={enquiry} onChange={(event) => setEnquiry(event.target.value)} rows={4} placeholder="Material, destination, timing..." className="mt-3 w-full resize-none border-b border-[#5a5145] bg-transparent py-3 text-sm leading-6 text-[#f1ede5] placeholder:text-[#70685e] outline-none focus:border-[#d09b30]" data-testid="modal-textarea-requirement" /></label>
               <div className="flex flex-wrap items-center justify-between gap-4 pt-3">
                 <span className="text-[11px] leading-5 text-[#81796f]">Or use <a href={waHref} target="_blank" rel="noreferrer" className="text-[#d09b30] underline underline-offset-4" data-testid="link-modal-whatsapp">WhatsApp</a>.</span>
                 <button type="submit" className="flex items-center gap-3 bg-[#c89532] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#211f1b] hover:bg-[#e2b04c]" data-testid="button-modal-submit">Send enquiry <ArrowUpRight size={15} /></button>
@@ -603,10 +692,74 @@ function App() {
   );
 }
 
+function CommodityDetailPage({ params }: { params: { slug: string } }) {
+  const commodity = commodities.find((item) => item.slug === params.slug);
+
+  useEffect(() => {
+    if (!commodity) return;
+    document.title = `${commodity.name} | Qawe Investment Company Limited`;
+    const description = document.querySelector('meta[name="description"]') ?? document.createElement('meta');
+    description.setAttribute('name', 'description');
+    description.setAttribute('content', `${commodity.name} sourcing and supply conversations from Qawe Investment Company Limited.`);
+    document.head.appendChild(description);
+    return () => {
+      document.title = 'Qawe Investment Company Limited — Material. Moved with clarity.';
+    };
+  }, [commodity]);
+
+  if (!commodity) return <NotFound />;
+
+  return (
+    <div className="min-h-[100dvh] bg-[#211f1b] text-[#f1ede5]">
+      <header className="border-b border-[#4a443b] bg-[#181715]">
+        <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5 lg:px-8">
+          <a href={sitePath()} className="flex items-center gap-3" data-testid="link-detail-logo">
+            <span className="flex h-9 w-9 items-center justify-center border border-[#c89532] font-display text-lg font-bold text-[#d09b30]">Q</span>
+            <span className="font-display text-[13px] font-bold uppercase tracking-[.16em]">Qawe</span>
+          </a>
+          <a href={sitePath()} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.14em] text-[#d09b30]" data-testid="link-detail-back">
+            <ArrowLeftIcon /> Back to company
+          </a>
+        </div>
+      </header>
+      <main className="mx-auto max-w-[1100px] px-5 py-20 lg:px-8 lg:py-28">
+        <div className="max-w-[760px]">
+          <span className="eyebrow text-[#d09b30]">{commodity.category} / {commodity.code}</span>
+          <h1 className="mt-7 font-display text-[clamp(3.2rem,8vw,7rem)] font-semibold leading-[.88] tracking-[-.08em]">{commodity.name}</h1>
+          <p className="mt-9 max-w-[650px] text-[17px] leading-8 text-[#c1b9ae]">{commodity.description}</p>
+        </div>
+        <div className="mt-16 grid gap-px bg-[#5a5145]/60 sm:grid-cols-2">
+          <div className="bg-[#181715] p-7 sm:p-9">
+            <span className="eyebrow text-[#8f877c]">Typical use</span>
+            <p className="mt-5 max-w-[360px] font-display text-2xl leading-tight tracking-[-.04em]">{commodity.uses}</p>
+          </div>
+          <div className="bg-[#181715] p-7 sm:p-9">
+            <span className="eyebrow text-[#8f877c]">Conversation format</span>
+            <p className="mt-5 max-w-[360px] font-display text-2xl leading-tight tracking-[-.04em]">{commodity.forms}</p>
+          </div>
+        </div>
+        <div className="mt-16 border-t border-[#4a443b] pt-8">
+          <p className="max-w-[680px] text-sm leading-7 text-[#9e968b]">Availability, specification, quality verification, documentation, destination and timing are confirmed requirement by requirement. Share your brief with the Qawe team to discuss the right next step.</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a href={`mailto:${OFFICIAL_EMAIL}?subject=${encodeURIComponent(`${commodity.name} supply enquiry`)}`} onClick={() => trackEvent('rfq_started', { source: 'commodity_detail', material: commodity.name })} className="flex items-center gap-3 bg-[#c89532] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#211f1b] hover:bg-[#e2b04c]" data-testid="link-detail-email">Email an RFQ <ArrowUpRight size={15} /></a>
+            <a href={whatsappLink(PRIMARY_WHATSAPP, `Hello Qawe Investment Company Limited, I would like to discuss ${commodity.name}.`)} target="_blank" rel="noreferrer" onClick={() => trackEvent('contact_clicked', { channel: 'whatsapp', material: commodity.name })} className="flex items-center gap-3 border border-[#786f61] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#d7d1c8] hover:border-[#d09b30] hover:text-[#d09b30]" data-testid="link-detail-whatsapp">WhatsApp the team <MessageCircle size={15} /></a>
+          </div>
+        </div>
+      </main>
+      <footer className="border-t border-[#37332d] px-5 py-6 text-xs text-[#827a6f] lg:px-8">© Qawe Investment Company Limited · {OFFICE_ADDRESS}</footer>
+    </div>
+  );
+}
+
+function ArrowLeftIcon() {
+  return <ArrowRight size={14} className="rotate-180" />;
+}
+
 function Router() {
   return (
     <RoutedErrorBoundary>
       <Switch>
+        <Route path="/commodities/:slug" component={CommodityDetailPage} />
         <Route path="/" component={App} />
         <Route component={NotFound} />
       </Switch>
