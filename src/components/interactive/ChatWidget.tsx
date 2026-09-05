@@ -100,7 +100,8 @@ export function ChatWidget({ onOpenEnquiry }: ChatWidgetProps) {
       {/* Floating Chat Trigger Button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-20 right-5 z-30 flex items-center gap-2 border border-[#211f1b] bg-[#f1ede5] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#211f1b] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:bg-white"
+        className="fixed right-5 z-30 flex items-center gap-2 border border-[#211f1b] bg-[#f1ede5] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#211f1b] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:bg-white"
+        style={{ bottom: 'calc(3.75rem + env(safe-area-inset-bottom, 0px))' }}
         aria-expanded={isOpen}
         aria-controls="qawe-direct-chat"
         data-testid="button-chat-toggle"
@@ -114,7 +115,8 @@ export function ChatWidget({ onOpenEnquiry }: ChatWidgetProps) {
         href={waHref}
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-5 right-5 z-30 flex items-center gap-2 border border-[#211f1b] bg-[#c89532] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#211f1b] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-[#e2b04c] hover:shadow-[0_0_15px_rgba(200,149,50,0.5)]"
+        className="fixed right-5 z-30 flex items-center gap-2 border border-[#211f1b] bg-[#c89532] px-4 py-3 text-[10px] font-bold uppercase tracking-[.12em] text-[#211f1b] shadow-xl transition-all duration-300 hover:-translate-y-1 hover:bg-[#e2b04c] hover:shadow-[0_0_15px_rgba(200,149,50,0.5)]"
+        style={{ bottom: 'env(safe-area-inset-bottom, 0px)', marginBottom: '1.25rem' }}
         data-testid="link-floating-whatsapp"
       >
         <span className="h-2 w-2 rounded-full bg-emerald-700 animate-ping" />
@@ -125,7 +127,8 @@ export function ChatWidget({ onOpenEnquiry }: ChatWidgetProps) {
       {isOpen && (
         <div
           id="qawe-direct-chat"
-          className="chat-panel fixed bottom-[8.5rem] right-5 z-40 flex w-[min(390px,calc(100vw-2rem))] flex-col overflow-hidden border border-[#5a5145] bg-[#1e1c18] text-[#f1ede5] shadow-[0_24px_80px_rgba(0,0,0,.6)] animate-in fade-in slide-in-from-bottom-4 duration-200"
+          className="chat-panel fixed right-5 z-40 flex w-[min(390px,calc(100vw-2rem))] flex-col overflow-hidden border border-[#5a5145] bg-[#1e1c18] text-[#f1ede5] shadow-[0_24px_80px_rgba(0,0,0,.6)] animate-in fade-in slide-in-from-bottom-4 duration-200"
+          style={{ bottom: 'calc(8rem + env(safe-area-inset-bottom, 0px))' }}
           role="dialog"
           aria-label="Qawe direct assistant"
         >

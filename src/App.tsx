@@ -53,10 +53,10 @@ export function App() {
     metaDesc.setAttribute('content', 'Qawe Investment Company Limited connects verified mineral sourcing to export, shipping and final delivery from Dar es Salaam, Tanzania.');
     document.head.appendChild(metaDesc);
 
-    // Initial luxury splash screen delay (3.5 seconds)
+    // Hold splash until progress bar completes (1.8s) + a tiny buffer
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1800);
+    }, 1850);
 
     return () => clearTimeout(timer);
   }, []);
@@ -99,7 +99,13 @@ export function App() {
   };
 
   return (
-    <div className="site-shell noise min-h-[100dvh] bg-[#efede7] text-[#211f1b]">
+    <div
+      className="site-shell noise min-h-[100dvh] text-[#211f1b]"
+      style={{
+        background: isLoading ? '#141311' : '#efede7',
+        transition: 'background 0.5s ease-in-out',
+      }}
+    >
       {/* Fullscreen Initial Splash Loader with Rotating Conic Border */}
       <SplashScreen isLoading={isLoading} />
 
