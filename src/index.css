@@ -84,7 +84,8 @@
 
   html {
     scroll-behavior: smooth;
-    overscroll-behavior: none;
+    /* Block only horizontal overscroll — keeps pull-to-refresh working */
+    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -93,8 +94,8 @@
     font-family: var(--app-font-sans);
     background: #141311;
     transition: background 0.5s ease-in-out;
-    overscroll-behavior-y: none;
-    /* Prevent blank space above mobile browser nav bars */
+    /* Block horizontal rubber-band only; vertical pull-to-refresh stays enabled */
+    overscroll-behavior-x: none;
     min-height: 100%;
     min-height: -webkit-fill-available;
   }
@@ -162,6 +163,76 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ─── Scroll-Reveal System (IntersectionObserver-driven) ──────────────────── */
+
+/* Base hidden states — applied before element enters view */
+.sr-hidden {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.sr-fade-up {
+  transform: translateY(36px);
+  transition: opacity 0.72s cubic-bezier(.22, .8, .24, 1),
+              transform 0.72s cubic-bezier(.22, .8, .24, 1);
+}
+
+.sr-fade-left {
+  transform: translateX(-36px);
+  transition: opacity 0.68s cubic-bezier(.22, .8, .24, 1),
+              transform 0.68s cubic-bezier(.22, .8, .24, 1);
+}
+
+.sr-fade-right {
+  transform: translateX(36px);
+  transition: opacity 0.68s cubic-bezier(.22, .8, .24, 1),
+              transform 0.68s cubic-bezier(.22, .8, .24, 1);
+}
+
+.sr-fade-scale {
+  transform: scale(0.93);
+  transition: opacity 0.75s cubic-bezier(.22, .8, .24, 1),
+              transform 0.75s cubic-bezier(.22, .8, .24, 1);
+}
+
+/* Visible state — added by useScrollReveal when element enters viewport */
+.sr-visible {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Stagger delays for child elements */
+.sr-delay-1 { transition-delay: 0.08s; }
+.sr-delay-2 { transition-delay: 0.18s; }
+.sr-delay-3 { transition-delay: 0.28s; }
+.sr-delay-4 { transition-delay: 0.40s; }
+.sr-delay-5 { transition-delay: 0.52s; }
+.sr-delay-6 { transition-delay: 0.66s; }
+
+/* ─── Scroll Progress Bar ─────────────────────────────────────────────────── */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  z-index: 9998;
+  background: linear-gradient(90deg, #c89532, #f0c86a, #c89532);
+  background-size: 200% 100%;
+  animation: progressShimmer 2.5s linear infinite;
+  transform-origin: left;
+  pointer-events: none;
+}
+
+@keyframes progressShimmer {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+/* ─── Active nav link state ───────────────────────────────────────────────── */
+.nav-link.active {
+  color: #d09b30;
 }
 
 @keyframes scan {

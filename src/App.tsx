@@ -38,6 +38,31 @@ import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
 
+/** Thin gold reading-progress indicator fixed at the top of the page */
+function ScrollProgressBar() {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const update = () => {
+      const scrolled = window.scrollY;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
+      setWidth(total > 0 ? (scrolled / total) * 100 : 0);
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
+  }, []);
+  return (
+    <div
+      className="scroll-progress-bar"
+      style={{ width: `${width}%` }}
+      role="progressbar"
+      aria-valuenow={Math.round(width)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label="Page reading progress"
+    />
+  );
+}
+
 export function App() {
   const [enquiryText, setEnquiryText] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -63,9 +88,11 @@ export function App() {
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+    if (!el) return;
+    // Account for fixed header (74px) + 20px breathing room
+    const headerOffset = 74 + 20;
+    const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
   };
 
   const openEnquiry = (commodityName = '') => {
@@ -106,6 +133,8 @@ export function App() {
         transition: 'background 0.5s ease-in-out',
       }}
     >
+      {/* Gold scroll-progress indicator */}
+      <ScrollProgressBar />
       {/* Fullscreen Initial Splash Loader with Rotating Conic Border */}
       <SplashScreen isLoading={isLoading} />
 

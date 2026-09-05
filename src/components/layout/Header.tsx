@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ArrowUpRight, Menu, MessageCircle, X } from 'lucide-react';
 import { PRIMARY_WHATSAPP, whatsappLink } from '@/data/company';
+import { useActiveSection } from '@/hooks/use-active-section';
 
 interface HeaderProps {
   onOpenEnquiry: (commodity?: string) => void;
@@ -18,9 +19,12 @@ const navItems = [
   ['Contact', 'contact'],
 ];
 
+const sectionIds = navItems.map(([, id]) => id);
+
 export function Header({ onOpenEnquiry, onScrollTo }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const waHref = whatsappLink(PRIMARY_WHATSAPP);
+  const activeSection = useActiveSection(navItems.map(([, id]) => id));
 
   const handleNavClick = (id: string) => {
     setMobileOpen(false);
@@ -88,20 +92,27 @@ export function Header({ onOpenEnquiry, onScrollTo }: HeaderProps) {
 
         {/* Desktop Navigation */}
         <nav className="hidden items-center gap-6 lg:flex" aria-label="Primary navigation">
-          {navItems.map(([label, id]) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick(id);
-              }}
-              className="nav-link relative text-[10px] font-semibold uppercase tracking-[.13em] text-[#d2cec5] transition-colors hover:text-[#d09b30]"
-              data-testid={`link-nav-${id}`}
-            >
-              {label}
-            </a>
-          ))}
+          {navItems.map(([label, id]) => {
+            const isActive = activeSection === id;
+            return (
+              <a
+                key={id}
+                href={`#${id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(id);
+                }}
+                className={`nav-link relative text-[10px] font-semibold uppercase tracking-[.13em] transition-colors hover:text-[#d09b30] ${isActive ? 'active text-[#d09b30]' : 'text-[#d2cec5]'}`}
+                data-testid={`link-nav-${id}`}
+              >
+                {label}
+                {/* Active dot indicator */}
+                {isActive && (
+                  <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 h-[3px] w-[3px] rounded-full bg-[#d09b30]" />
+                )}
+              </a>
+            );
+          })}
         </nav>
 
         {/* Action CTAs */}
@@ -141,20 +152,24 @@ export function Header({ onOpenEnquiry, onScrollTo }: HeaderProps) {
           className="animate-in fade-in slide-in-from-top-2 border-t border-white/10 bg-[#1b1a17] px-5 py-5 duration-200 lg:hidden"
           aria-label="Mobile navigation"
         >
-          {navItems.map(([label, id]) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick(id);
-              }}
-              className="block border-b border-white/10 py-3 text-[11px] font-semibold uppercase tracking-[.16em] text-[#d2cec5] transition-colors hover:text-[#d09b30]"
-              data-testid={`link-mobile-nav-${id}`}
-            >
-              {label}
-            </a>
-          ))}
+          {navItems.map(([label, id]) => {
+            const isActive = activeSection === id;
+            return (
+              <a
+                key={id}
+                href={`#${id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleNavClick(id);
+                }}
+                className={`flex items-center gap-2 border-b border-white/10 py-3 text-[11px] font-semibold uppercase tracking-[.16em] transition-colors hover:text-[#d09b30] ${isActive ? 'text-[#d09b30]' : 'text-[#d2cec5]'}`}
+                data-testid={`link-mobile-nav-${id}`}
+              >
+                {isActive && <span className="h-[3px] w-[3px] rounded-full bg-[#d09b30] shrink-0" />}
+                {label}
+              </a>
+            );
+          })}
           <div className="mt-5 space-y-3">
             <button
               onClick={() => {
