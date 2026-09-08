@@ -18,9 +18,9 @@ export interface Service {
   details?: string;
 }
 
-export const OFFICIAL_EMAIL = 'qaweminiral@qawe.co.tz';
+export const OFFICIAL_EMAIL = 'info@qaweinvestment.com';
 export const OFFICE_ADDRESS = 'Ununio, Dar es Salaam, Tanzania';
-export const PRIMARY_WHATSAPP = '255750471188';
+export const PRIMARY_WHATSAPP = '+255750471188';
 
 export const leadership: Leader[] = [
   { role: 'Director', name: 'Tshepo Zwelibanzi', initials: 'TZ', contact: '+27 78 963 8042', tel: '27789638042' },
@@ -39,26 +39,26 @@ export const services: Service[] = [
   {
     number: '01',
     title: 'Sourcing',
-    copy: 'We start with your requirement, then build the right sourcing conversation around material, grade, form, timing and destination.',
+    copy: 'Share product, quantity, destination, and required specifications.',
     details: 'Direct relationships with verified artisanal and industrial concessions across the East and Central African mineral corridors.'
   },
   {
     number: '02',
-    title: 'Verification',
-    copy: 'Material and documentation are reviewed before the next handover. The brief stays visible throughout every inspection step.',
-    details: 'Independent assaying (SGS, Alex Stewart, Bureau Veritas), physical weighing, and anti-counterfeit batch documentation.'
+    title: 'Quality Verification',
+    copy: 'Inspection, assay, or specification review is aligned before shipment.',
+    details: 'Product go through assays and lab confirming the grade and specifications'
   },
   {
     number: '03',
     title: 'Export & shipping',
-    copy: 'A coordinated route from origin through customs export, secure bonded warehousing, and ocean/air freight to destination.',
-    details: 'Full compliance with Tanzania Mining Commission regulations, export permits, chamber of commerce certificates, and EUR1/bill of lading.'
+    copy: 'Our team clarifies availability, documentation, transaction structure and exportaion process',
+    details: 'Full compliance with Tanzania Mining Commission regulations, export permits, all certificates of documents inckuding bill of lading.'
   },
   {
     number: '04',
     title: 'Final delivery',
-    copy: 'The job is complete when the material arrives where it needs to be, with the right paperwork and assays alongside it.',
-    details: 'Delivered under clear Incoterms (FOB Dar es Salaam, CIF Destination Port, or CFR) with transparent milestone updates.'
+    copy: 'Shipping paperwork and logistics milestones are confirmed with the buyer.',
+    details: 'Delivered under clear Incoterms  with transparent milestone.'
   },
 ];
 
