@@ -10,7 +10,7 @@ interface CommoditiesProps {
 export function Commodities({ onSelectCommodity, onOpenEnquiry }: CommoditiesProps) {
   const handleCommodityClick = (commodity: Commodity) => {
     onSelectCommodity(commodity);
-    trackEvent('commodity_viewed', { commodity: commodity.name, category: commodity.category });
+    // trackEvent('commodity_viewed', { commodity: commodity.name, category: commodity.category });
   };
 
   return (
@@ -61,11 +61,11 @@ export function Commodities({ onSelectCommodity, onOpenEnquiry }: CommoditiesPro
                 <p className="mt-2 text-xs leading-5 text-[#9c958b]">
                   {commodity.detail}
                 </p>
-                {commodity.stockType && (
+                {/* {commodity.stockType && (
                   <span className="mt-3 inline-block font-mono-custom text-[8px] uppercase tracking-[.1em] text-[#d09b30]/80">
                     {commodity.stockType}
                   </span>
-                )}
+                )} */}
               </div>
 
               {/* Accent indicator on last item */}

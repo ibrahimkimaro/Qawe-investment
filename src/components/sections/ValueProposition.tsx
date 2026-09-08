@@ -15,8 +15,8 @@ export function ValueProposition({ onOpenEnquiry }: ValuePropositionProps) {
             </div>
             <h2 className="mt-7 max-w-[800px] font-display text-[clamp(2.7rem,6vw,6.2rem)] font-semibold leading-[.88] tracking-[-.075em] text-[#25221d]">
               Serious buyers<br />
-              need <span className="text-[#a77520]">signal,</span><br />
-              not noise.
+              need <span className="text-[#a77520]">Serious,</span><br />
+              Sellers.
             </h2>
           </div>
 

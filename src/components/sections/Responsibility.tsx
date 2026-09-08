@@ -3,7 +3,7 @@ export function Responsibility() {
     {
       code: '01',
       title: 'Clear documentation',
-      desc: 'Government royalty certificates, mineral export permits, certificate of origin, and EUR1/SGS paperwork aligned with international trade law.'
+      desc: 'Government royalty certificates, mineral export permits, certificate of origin, and inspections company aligned with international trade law.'
     },
     {
       code: '02',

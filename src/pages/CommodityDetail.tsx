@@ -35,16 +35,39 @@ export default function CommodityDetailPage({ params }: CommodityDetailPageProps
       <header className="border-b border-[#4a443b] bg-[#181715]">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-5 lg:px-8">
           <a href={sitePath()} className="flex items-center gap-3" data-testid="link-detail-logo">
-            <div className="flex h-9 w-9 items-center justify-center border border-[#c89532] bg-[#141311]">
+            <div
+              className="hover:opacity-90 relative p-[2px] overflow-hidden rounded-2xl flex items-center justify-center h-14 w-auto hover:scale-105 transition-all duration-300"
+            >
+              {/* Keyframe ya animation iliyowekwa inline */}
+              <style>{`
+    @keyframes spinBorder {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  `}</style>
+
+              {/* Tabaka la Mpaka Unaotembea Nyeupe */}
+              <span
+                className="absolute -z-10"
+                style={{
+                  background: 'conic-gradient(from 0deg, transparent 20%, #ffffff 50%, transparent 80%)',
+                  animation: 'spinBorder 3s linear infinite',
+                  width: '250%',
+                  height: '250%',
+                }}
+              />
+
+              {/* Picha ya Nembo Pamoja na Logic ya Error handling */}
               <img
                 src="/media/qawe-brand-logo.jpeg"
-                alt="Qawe"
-                className="h-full w-full object-cover"
+                alt="Qawe crest"
+                className="h-12 w-auto object-cover rounded-2xl"
+                style={{ background: '#000000' }} /* Badilisha #000000 kulingana na rangi ya background ya tovuti yako */
                 onError={(e) => {
+                  // Fallback to stylized Q if image loads slowly
                   (e.currentTarget as HTMLElement).style.display = 'none';
                 }}
               />
-              <span className="font-display text-sm font-bold text-[#d09b30]">Q</span>
             </div>
             <span className="font-display text-[13px] font-bold uppercase tracking-[.16em]">
               Qawe Investment
