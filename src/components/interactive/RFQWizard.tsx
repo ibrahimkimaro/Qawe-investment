@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ArrowUpRight, X } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 import { OFFICIAL_EMAIL } from '@/data/company';
 import { trackEvent } from '@/lib/analytics';
 
@@ -34,8 +35,6 @@ export function RFQWizard({ isOpen, onClose }: RFQWizardProps) {
 
   const downloadPDF = async () => {
     try {
-      const jsPDFModule = await import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
-      const { jsPDF } = (jsPDFModule as any).default ? (jsPDFModule as any).default : jsPDFModule;
       const doc = new jsPDF();
       doc.setFontSize(16);
       doc.text('QAWE — RFQ Draft', 14, 20);
@@ -56,7 +55,8 @@ export function RFQWizard({ isOpen, onClose }: RFQWizardProps) {
       doc.text(doc.splitTextToSize(lines.join('\n'), 180), 14, 40);
       doc.save('qawe-rfq-draft.pdf');
     } catch (e) {
-      // ignore
+      // eslint-disable-next-line no-console
+      console.error('Failed to download RFQ PDF', e);
     }
   };
 

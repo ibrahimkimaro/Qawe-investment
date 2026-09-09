@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle, FileText, ClipboardList, Truck, Globe, Archive, DollarSign } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 const STEPS = [
   {
@@ -82,8 +83,6 @@ export function TransactionPipeline({ onOpenEnquiry }: { onOpenEnquiry?: (commod
 
   const generatePipelinePDF = async () => {
     try {
-      const jsPDFModule = await import('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
-      const { jsPDF } = (jsPDFModule as any).default ? (jsPDFModule as any).default : jsPDFModule;
       const doc = new jsPDF();
       doc.setFontSize(14);
       doc.text('QAWE — 7-Step Transaction Pipeline', 14, 20);
@@ -92,7 +91,11 @@ export function TransactionPipeline({ onOpenEnquiry }: { onOpenEnquiry?: (commod
         doc.text(`${s.id}. ${s.title}`, 14, 36 + i * 10);
       });
       doc.save('qawe-transaction-pipeline.pdf');
-    } catch (e) {}
+    } catch (e) {
+      // Log errors in production-friendly way
+      // eslint-disable-next-line no-console
+      console.error('Failed to generate pipeline PDF', e);
+    }
   };
 
   return (
