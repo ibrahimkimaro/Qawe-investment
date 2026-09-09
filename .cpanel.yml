@@ -2,6 +2,6 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/qaweinve/public_html/
-    - /bin/cp index.html $DEPLOYPATH
-    - /bin/cp style.css $DEPLOYPATH
-
+    - npm install
+    - npm run build
+    - /bin/cp -R dist/* $DEPLOYPATH
