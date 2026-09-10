@@ -35,7 +35,7 @@ export default function CommodityDetailPage({ params }: CommodityDetailPageProps
   // Modal and toast state
   const [isRfqOpen, setIsRfqOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  
+
   // RFQ Form state
   const [companyName, setCompanyName] = useState('');
   const [contactName, setContactName] = useState('');
@@ -92,7 +92,7 @@ export default function CommodityDetailPage({ params }: CommodityDetailPageProps
   const submitRfqViaWhatsApp = (e: React.FormEvent) => {
     e.preventDefault();
     const message = `*FORMAL SUPPLY RFQ - QAWE INVESTMENT*\n\n*Commodity:* ${commodity.name} (Code: ${commodity.code})\n*Company:* ${companyName || 'Not specified'}\n*Contact Person:* ${contactName || 'Not specified'}\n*Contact details:* ${contactInfo || 'Not specified'}\n*Required Quantity:* ${quantity || 'To be discussed'}\n*Delivery Terms:* ${incoterm} ${destinationPort ? 'to ' + destinationPort : ''}\n*Additional Specifications/Notes:* ${notes || 'Standard Grade'}\n\n_Submitted via qaweinvestment.com Specification Portal_ communication;`;
-    
+
     trackEvent('rfq_submitted', { channel: 'whatsapp_modal', material: commodity.name });
     window.open(whatsappLink(PRIMARY_WHATSAPP, message), '_blank');
     setIsRfqOpen(false);
@@ -106,10 +106,10 @@ export default function CommodityDetailPage({ params }: CommodityDetailPageProps
       {/* Top Header */}
       <header className="sticky top-0 z-40 border-b border-[#4a443b] bg-[#181715]/95 backdrop-blur print:hidden">
         <div className="mx-auto flex max-w-[1100px] items-center justify-between px-5 py-4 lg:px-8">
-          <button 
+          <button
             type="button"
-            onClick={() => setLocation('/')} 
-            className="flex items-center gap-3 group text-left cursor-pointer" 
+            onClick={() => setLocation('/')}
+            className="flex items-center gap-3 group text-left cursor-pointer"
             data-testid="link-detail-logo"
           >
             <div className="relative p-[2px] overflow-hidden rounded-2xl flex items-center justify-center h-12 w-auto transition-transform duration-300 group-hover:scale-105">
@@ -185,9 +185,9 @@ export default function CommodityDetailPage({ params }: CommodityDetailPageProps
               <span className="inline-block px-3 py-1 bg-[#2e2a24] border border-[#524b3e] text-[11px] font-bold uppercase tracking-widest text-[#d09b30]">
                 {commodity.category} • REF: {commodity.code}
               </span>
-              
+
             </div>
-            
+
             <h1 className="mt-5 font-display text-[clamp(2.8rem,7vw,5.5rem)] font-semibold leading-[.92] tracking-[-.06em] text-[#fbf8f3]">
               {commodity.name}
             </h1>
@@ -373,7 +373,7 @@ export default function CommodityDetailPage({ params }: CommodityDetailPageProps
                   Explore Complementary Commodities
                 </h3>
               </div>
-              <button 
+              <button
                 onClick={handleBack}
                 className="text-xs text-[#a9a194] hover:text-[#d09b30] transition-colors"
               >
