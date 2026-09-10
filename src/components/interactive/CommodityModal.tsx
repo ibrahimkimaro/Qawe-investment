@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { ArrowRight, ArrowUpRight, Check, X } from 'lucide-react';
 import { Commodity } from '@/data/commodities';
-import { sitePath } from '@/data/company';
+import { useLocation } from 'wouter';
 import { trackEvent } from '@/lib/analytics';
 
 interface CommodityModalProps {
@@ -11,6 +11,8 @@ interface CommodityModalProps {
 }
 
 export function CommodityModal({ commodity, onClose, onOpenEnquiry }: CommodityModalProps) {
+  const [, setLocation] = useLocation();
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -87,7 +89,7 @@ export function CommodityModal({ commodity, onClose, onOpenEnquiry }: CommodityM
         </div>
 
         <p className="mt-5 text-xs leading-5 text-[#8d857a]">
-          Product availability, technical assays, independent inspection, export documentation and freight schedule are confirmed against your individual brief.
+          Technical assays, independent inspection, export documentation, and freight schedules are confirmed against your individual brief.
         </p>
 
         {/* Action Buttons */}
@@ -103,14 +105,17 @@ export function CommodityModal({ commodity, onClose, onOpenEnquiry }: CommodityM
           >
             Request an RFQ <ArrowUpRight size={15} />
           </button>
-          <a
-            href={sitePath(`commodities/${commodity.slug}`)}
-            onClick={() => trackEvent('commodity_detail_opened', { commodity: commodity.name })}
-            className="flex items-center gap-2 border border-[#786f61] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#d7d1c8] transition-colors hover:border-[#d09b30] hover:text-[#d09b30]"
+          <button
+            onClick={() => {
+              trackEvent('commodity_detail_opened', { commodity: commodity.name });
+              onClose();
+              setLocation(`/commodities/${commodity.slug}`);
+            }}
+            className="flex items-center gap-2 border border-[#786f61] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#d7d1c8] transition-colors hover:border-[#d09b30] hover:text-[#d09b30] cursor-pointer"
             data-testid="link-commodity-detail"
           >
             Open full specification <ArrowRight size={14} />
-          </a>
+          </button>
         </div>
       </div>
     </div>

@@ -45,7 +45,7 @@ export function MediaSection({
 
           <div className="flex flex-col items-start gap-3 sm:items-end">
             <a
-              href="/media/qawe-company-profile.pdf"
+              href="/media/qawe-investiment-profile.pdf"
               download="Qawe-Investment-Company-Profile.pdf"
               onClick={onDownloadBrief}
               className="line-button flex items-center gap-3 border border-[#c89532]/70 bg-[#2b2721] px-5 py-3.5 text-[10px] font-bold uppercase tracking-[.14em] text-[#f1ede5] transition-all hover:bg-[#c89532] hover:text-[#211f1b] hover:shadow-[0_0_20px_rgba(200,149,50,0.3)]"
@@ -72,19 +72,18 @@ export function MediaSection({
         {/* Filter Navigation Tabs */}
         <div className="mt-12 flex flex-wrap items-center gap-2 border-b border-[#433c32] pb-4">
           {[
-            { id: 'all', label: 'All Media & Stocks' },
+            { id: 'all', label: 'All Verified Media' },
             { id: 'verification', label: 'Physical Verification Videos (2)' },
-            { id: 'stocks', label: 'Warehouse & Field Stocks (5)' },
+            { id: 'stocks', label: 'Warehouse & Materials (5)' },
             { id: 'notes', label: 'Field Trading Notes' },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-4 py-2 font-mono-custom text-[10px] uppercase tracking-[.12em] transition-all duration-200 border ${
-                activeTab === tab.id
-                  ? 'border-[#c89532] bg-[#c89532] text-[#211f1b] font-bold shadow-sm'
-                  : 'border-white/10 bg-[#191815] text-[#b4ada2] hover:border-white/25 hover:text-[#f1ede5]'
-              }`}
+              className={`px-4 py-2 font-mono-custom text-[10px] uppercase tracking-[.12em] transition-all duration-200 border ${activeTab === tab.id
+                ? 'border-[#c89532] bg-[#c89532] text-[#211f1b] font-bold shadow-sm'
+                : 'border-white/10 bg-[#191815] text-[#b4ada2] hover:border-white/25 hover:text-[#f1ede5]'
+                }`}
             >
               {tab.label}
             </button>

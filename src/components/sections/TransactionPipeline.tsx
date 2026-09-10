@@ -15,7 +15,7 @@ const STEPS = [
     title: '02 — Commercial & Term Alignment',
     icon: <ClipboardList size={20} />,
     description:
-      'QAWE verifies product availability, sets commercial structures, and aligns trade conditions directly with the buyer.',
+      'QAWE aligns commercial structures, export documentation requirements, and trade conditions directly with the buyer.',
   },
   {
     id: 3,

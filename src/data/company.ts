@@ -51,7 +51,7 @@ export const services: Service[] = [
   {
     number: '03',
     title: 'Export & shipping',
-    copy: 'Our team clarifies availability, documentation, transaction structure and exportaion process',
+    copy: 'Our team clarifies specifications, documentation, transaction structure and exportation process',
     details: 'Full compliance with Tanzania Mining Commission regulations, export permits, all certificates of documents inckuding bill of lading.'
   },
   {

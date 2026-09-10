@@ -18,6 +18,8 @@ import { ValueProposition } from '@/components/sections/ValueProposition';
 import { Responsibility } from '@/components/sections/Responsibility';
 import { MediaSection } from '@/components/sections/MediaSection';
 import { Leadership } from '@/components/sections/Leadership';
+import { ProcurementCalculator } from '@/components/interactive/ProcurementCalculator';
+import { downloadCompanyProfilePdf } from '@/lib/pdfGenerator';
 import { Contact } from '@/components/sections/Contact';
 
 // Interactive Widgets & Modals
@@ -81,7 +83,7 @@ export function App() {
     // Hold splash until progress bar completes (1.8s) + a tiny buffer
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1850);
+    }, 1650);
 
     return () => clearTimeout(timer);
   }, []);
@@ -122,6 +124,7 @@ export function App() {
   const downloadBrief = () => {
     trackEvent('brochure_requested', { status: 'downloaded' });
     setBrochureNotice(true);
+    downloadCompanyProfilePdf();
     window.setTimeout(() => setBrochureNotice(false), 4500);
   };
 
@@ -147,6 +150,7 @@ export function App() {
         <Marquee />
         <About onOpenEnquiry={() => openEnquiry()} />
         <Commodities onSelectCommodity={setSelectedCommodity} onOpenEnquiry={openEnquiry} />
+        <ProcurementCalculator onOpenEnquiry={openEnquiry} />
         <Services />
         <Operations />
         <ValueProposition onOpenEnquiry={() => openEnquiry()} />

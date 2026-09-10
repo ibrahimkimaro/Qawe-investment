@@ -27,7 +27,7 @@ export function ValueProposition({ onOpenEnquiry }: ValuePropositionProps) {
             <div className="mt-9 grid gap-3 border-t border-[#cfc8bd] pt-6">
               {[
                 'A requirement-led starting point built to buyer specifications',
-                'One integrated view across physical stock, assaying and shipping',
+                'One integrated view across physical materials, assaying and shipping',
                 'Transparent commercial terms with verifiable physical inspection proof'
               ].map((point) => (
                 <div key={point} className="flex items-center gap-3 text-sm text-[#625d55]">
