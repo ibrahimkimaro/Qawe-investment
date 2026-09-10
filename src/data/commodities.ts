@@ -8,8 +8,7 @@ export interface Commodity {
   uses: string;
   forms: string;
   specs?: string[];
-  stockType?: string;
-}
+  }
 
 export const commodities: Commodity[] = [
   {
@@ -18,11 +17,10 @@ export const commodities: Commodity[] = [
     code: '01',
     category: 'Industrial minerals',
     detail: 'Refined material for industrial buyers',
-    description: 'A refined copper product (Grade A 99.97% - 99.99%) commonly used as a feedstock for manufacturing and further processing. Availability, specification, documentation and delivery are discussed against the buyer’s requirement.',
+    description: 'A refined copper product (Grade A 99.97% - 99.99%) commonly used as a feedstock for manufacturing and further processing. Specification, documentation, assaying and delivery are discussed against the buyer’s requirement.',
     uses: 'Electrical, construction and industrial manufacturing',
     forms: 'Cathode sheets (bound with steel strapping); customer-specific commercial brief',
-    specs: ['Grade A Purity: 99.97% - 99.99%', 'Standard Sheet Dimension: ~914mm x 914mm', 'Packaging: Steel banded bundles on pallets', 'Origin: DRC / Zambia / Tanzania corridor'],
-    stockType: 'Warehouse Stacks Available (800 MT Lot Verified)'
+    specs: ['Grade A Purity: 99.97% - 99.99%', 'Standard Sheet Dimension: ~914mm x 914mm', 'Packaging: Steel banded bundles on pallets', 'Origin: DRC / Zambia / Tanzania corridor']
   },
   {
     name: 'Copper Concentrate',
@@ -33,8 +31,7 @@ export const commodities: Commodity[] = [
     description: 'A copper-bearing material prepared for industrial processing. A supply conversation should define the required specification, documentation, destination and timing before commercial terms are discussed.',
     uses: 'Smelting, refining and industrial processing',
     forms: 'Concentrate; requirement-led sourcing brief',
-    specs: ['Typical Cu Content: 20% - 35%', 'Moisture Content: Controlled < 9%', 'Packaging: 1-1.5 MT Big Bags or Bulk containerized', 'Testing: SGS / Alfred H Knight / Bureau Veritas on dispatch'],
-    stockType: 'Batch Sourcing'
+    specs: ['Typical Cu Content: 20% - 35%', 'Moisture Content: Controlled < 9%', 'Packaging: 1-1.5 MT Big Bags or Bulk containerized', 'Testing: SGS / Alfred H Knight / Bureau Veritas on dispatch']
   },
   {
     name: 'Copper Wire',
@@ -45,8 +42,7 @@ export const commodities: Commodity[] = [
     description: 'High-purity bright copper wire and scrap wire (Purity ≥ 99%) for buyers who need a defined material form and an organised route to delivery. The team can discuss application, specification, quantity and destination as part of an enquiry.',
     uses: 'Electrical systems, manufacturing, drawing and fabrication',
     forms: 'Bales of bright copper wire; bulk bags; specification-led enquiry',
-    specs: ['Purity: ≥ 99.0% - 99.9%', 'Form: Baled wire coils / 1 MT bulk bags', 'Inspected for purity and moisture', 'Dispatched from Dar es Salaam facility'],
-    stockType: 'Physical Stock Available'
+    specs: ['Purity: ≥ 99.0% - 99.9%', 'Form: Baled wire coils / 1 MT bulk bags', 'Inspected for purity and moisture', 'Dispatched from Dar es Salaam facility']
   },
   {
     name: 'Cobalt',
@@ -57,8 +53,7 @@ export const commodities: Commodity[] = [
     description: 'A strategic industrial material used in several manufacturing, energy storage and technology supply chains. Each conversation is shaped around the intended use, documentation, origin certification and route to the buyer.',
     uses: 'Industrial processing, technology, battery alloys and aerospace manufacturing',
     forms: 'Hydroxide / metal cathode / briquettes; requirement-specific material discussion',
-    specs: ['Co Content: Tailored to buyer brief', 'Full Chain-of-Custody & Traceability Documentation', 'OECD due diligence compliant sourcing corridor'],
-    stockType: 'Requirement-Led Sourcing'
+    specs: ['Co Content: Tailored to buyer brief', 'Full Chain-of-Custody & Traceability Documentation', 'OECD due diligence compliant sourcing corridor']
   },
   {
     name: 'Tantalite',
@@ -69,8 +64,7 @@ export const commodities: Commodity[] = [
     description: 'A tantalum-bearing mineral that requires a careful conversation around material identification, documentation, origin and movement. Availability is confirmed against the individual requirement.',
     uses: 'Specialist processing, capacitors and technology-related supply chains',
     forms: 'Mineral ore / concentrate; documentation-led enquiry',
-    specs: ['Ta2O5 content verified by assay', 'iTSCi / regional traceability tagging', 'Full export licensing from Tanzania / regional authorities'],
-    stockType: 'Verified Origin Corridor'
+    specs: ['Ta2O5 content verified by assay', 'iTSCi / regional traceability tagging', 'Full export licensing from Tanzania / regional authorities']
   },
   {
     name: 'Coltan',
@@ -81,8 +75,7 @@ export const commodities: Commodity[] = [
     description: 'A columbite-tantalite mineral material discussed with attention to the buyer’s requirement, available documentation, verification steps and delivery route.',
     uses: 'Specialist processing and technology-related supply chains',
     forms: 'Mineral material; requirement-led sourcing brief',
-    specs: ['Assay report provided per lot', 'Compliant origin documentation', 'Containerized secure shipping'],
-    stockType: 'Requirement-Led Sourcing'
+    specs: ['Assay report provided per lot', 'Compliant origin documentation', 'Containerized secure shipping']
   },
   {
     name: 'Gold',
@@ -93,8 +86,7 @@ export const commodities: Commodity[] = [
     description: 'A precious metal material discussed privately and requirement by requirement. Product form (nuggets, doré bars, granules), documentation, assay verification, destination and commercial process are confirmed directly with qualified buyers.',
     uses: 'Precious metals trading, refining, manufacturing and investment requirements',
     forms: 'Nuggets / doré bars / granules; requirement-specific precious metal discussion',
-    specs: ['Purity: Typically 92% - 96%+ Doré / Verified Granules', 'Government mineral royalty & export permits cleared', 'Official inspection batches (e.g. 214 KGs Dar es Salaam lot verified)', 'Secure vaulting and CIF air transit to buyer refinery'],
-    stockType: 'Physical Inspection Batches Available'
+    specs: ['Purity: Typically 92% - 96%+ Doré / Verified Granules', 'Government mineral royalty & export permits cleared', 'Official inspection batches (e.g. 214 KGs Dar es Salaam lot verified)', 'Secure vaulting and CIF air transit to buyer refinery']
   },
   {
     name: 'Sulfur',
@@ -105,7 +97,6 @@ export const commodities: Commodity[] = [
     description: 'An industrial material used across chemical, fertilizer and manufacturing applications. A clear brief helps the team align on grade, form, quantity, destination and timing.',
     uses: 'Chemical, agricultural, sulfuric acid production and industrial applications',
     forms: 'Granular / lump / flaked; requirement-specific material discussion',
-    specs: ['Purity: 99.5%+ Industrial grade', 'Shipped in bulk or 50kg bags', 'FOB Dar es Salaam or CIF destination'],
-    stockType: 'Volume Supply'
+    specs: ['Purity: 99.5%+ Industrial grade', 'Shipped in bulk or 50kg bags', 'FOB Dar es Salaam or CIF destination']
   },
 ];
